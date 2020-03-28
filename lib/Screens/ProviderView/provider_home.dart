@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:la_hack/Screens/authentication/provider_logIn.dart';
 import 'package:la_hack/utilities/networking.dart';
+import 'feedScreen.dart';
+import 'trackPackageScreen.dart';
+import 'mySupplies_Screen.dart';
 
 class ProviderHome extends StatefulWidget {
   static const String id = "Provider_Home";
@@ -30,11 +34,14 @@ class _ProviderHomeState extends State<ProviderHome> {
 
   void updateUI(dynamic data) {
     setState(() {
-      for (int i = 0; i < data['hospitals'].length; i ++){
+      for (int i = 0; i < data['hospitals'].length; i++) {
         hospital = data['hospitals'][i];
-        print('Hospital Name :' + hospital['name'] + '\n' + 'Location : ' + hospital['location']);
+        print('Hospital Name :' +
+            hospital['name'] +
+            '\n' +
+            'Location : ' +
+            hospital['location']);
       }
-    
     });
   }
 
@@ -50,16 +57,10 @@ class _ProviderHomeState extends State<ProviderHome> {
   }
 
   final List<Widget> _children = [
-    Container(
-      color: Colors.blue,
-    ),
-      Container(
-      color: Colors.blue,
+     MySupplies(),
+    TrackPackage(),
+    HospitalFeedScreen(),
     
-    ),
-      Container(
-      color: Colors.blue,
-    ),
   ];
   @override
   Widget build(BuildContext context) {
@@ -76,7 +77,7 @@ class _ProviderHomeState extends State<ProviderHome> {
           backgroundColor: Colors.grey,
           currentIndex: _currentIndex,
           onTap: onTappedBar,
-          selectedItemColor: Colors.lightBlueAccent,
+          selectedItemColor: Colors.redAccent,
           unselectedItemColor: Colors.white,
           type: BottomNavigationBarType.fixed,
           items: [
@@ -114,3 +115,4 @@ class _ProviderHomeState extends State<ProviderHome> {
     );
   }
 }
+
