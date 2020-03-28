@@ -9,6 +9,49 @@ import 'package:la_hack/components/icon_content.dart';
 import 'package:la_hack/utilities/constants.dart';
 import 'package:la_hack/Screens/ProviderView/provider_home.dart';
 import 'package:la_hack/utilities/networking.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+String url = 'http://2c990005.ngrok.io';
+
+Future<SendData> sendData(String username, String password) async {
+  final http.Response response = await http.post(
+    'http://2c990005.ngrok.io/register',
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'username': username,
+      'password' : password
+      
+    }),
+  );
+  print(response.body);
+
+
+  if (response.statusCode == 201) {
+    return SendData.fromJson(json.decode(response.body));
+   
+  } else {
+    throw Exception('Failed to create album.');
+  }
+}
+
+class SendData {
+  final int id;
+  final String title;
+
+  SendData({this.id, this.title});
+
+  factory SendData.fromJson(Map<String, dynamic> json) {
+    return SendData(
+      id: json['username'],
+      title: json['password'],
+    );
+  }
+}
+
 
 class Provider_Registration extends StatefulWidget {
   static const String id = "Provider_logIn";
@@ -20,22 +63,15 @@ class Provider_Registration extends StatefulWidget {
 class _Provider_RegistrationState extends State<Provider_Registration> {
   bool showSpinner = false;
 
-  String email;
+  String username;
   String password;
-
-  void sendData(String username, String password) async {
-    NetworkHelper networkHelper = NetworkHelper("/register");
-    Map<String, String> data = Map<String, String>();
-    data['username'] = username;
-    data['password'] = password;
-    var response = await networkHelper.sendData(data);
-    print(response);
-  }
+  Future<SendData> _sendData;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //backgroundColor: Colors.white,
+      //user/username
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Padding(
@@ -73,7 +109,7 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (value) {
-                    email = value;
+                    username = value;
                   },
                   decoration: kTextFieldDecoration.copyWith(hintText: 'Name')),
               SizedBox(
@@ -83,7 +119,7 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (value) {
-                    email = value;
+                    //email = value;
                   },
                   decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Name of Product')),
@@ -103,7 +139,10 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                 title: 'Register',
                 color: Colors.lightBlueAccent,
                 onPressed: () {
-                  sendData(email, password);
+                  setState(() {
+                       _sendData = sendData(username, password);
+                  });
+               
                   Navigator.popAndPushNamed(context, ProviderHome.id);
                 },
                 /*

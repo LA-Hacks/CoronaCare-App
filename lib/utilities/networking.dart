@@ -19,19 +19,7 @@ class NetworkHelper {
     }
   }
 
- Future sendData(Map<String, String> data) async {
-   //empty map
-    http.Response response = await http.post({url + path, {},data, "application/json"});
-
-    if (response.statusCode == 200) {
-      String data = response.body;
-      var decodedData = jsonDecode(data);
-      return decodedData;
-    } else {
-      print(response.statusCode);
-    }
-  }
-
+ 
   }
 
 

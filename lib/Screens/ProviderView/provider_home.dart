@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:la_hack/utilities/networking.dart';
 
-
 class ProviderHome extends StatefulWidget {
   static const String id = "Provider_Home";
 
@@ -12,9 +11,9 @@ class ProviderHome extends StatefulWidget {
 
 class _ProviderHomeState extends State<ProviderHome> {
   int _currentIndex = 0;
-  String hospitalName;
-  String cityName;
-  String message;
+  String username;
+  var hospital;
+  String location;
 
   void onTappedBar(int index) {
     setState(() {
@@ -23,41 +22,49 @@ class _ProviderHomeState extends State<ProviderHome> {
   }
 
   void getData() async {
-    NetworkHelper networkHelper = NetworkHelper('http://2c990005.ngrok.io/');
+    NetworkHelper networkHelper = NetworkHelper('/hospitallist');
     var data = await networkHelper.getData();
+    print(data);
+    updateUI(data);
   }
 
-  void updateUI(dynamic data){
+  void updateUI(dynamic data) {
     setState(() {
-      hospitalName = data['hospitalName'];
-      cityName = data['name'];
-      message = data['description'];
+      for (int i = 0; i < data['hospitals'].length; i ++){
+        hospital = data['hospitals'][i];
+        print('Hospital Name :' + hospital['name'] + '\n' + 'Location : ' + hospital['location']);
+      }
+    
     });
   }
 
   @override
   void initState() {
     super.initState();
-    
+    getData();
   }
 
-   @override
+  @override
   void deactivate() {
     super.deactivate();
   }
 
-
-
   final List<Widget> _children = [
-    ProviderListView(),
-    ProviderOrderInfo(),
-    ProviderResourceList(),
+    Container(
+      color: Colors.blue,
+    ),
+      Container(
+      color: Colors.blue,
     
+    ),
+      Container(
+      color: Colors.blue,
+    ),
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       body: _children[_currentIndex],
       bottomNavigationBar: ClipRRect(
         borderRadius: BorderRadius.only(
@@ -74,16 +81,15 @@ class _ProviderHomeState extends State<ProviderHome> {
           type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(
-              icon: Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: Icon(
-                  FontAwesomeIcons.hospital,
-                  size: 20.0,
+                icon: Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Icon(
+                    FontAwesomeIcons.hospital,
+                    size: 20.0,
+                  ),
                 ),
-              ),
-              title: Text('')
-            ),
-             BottomNavigationBarItem(
+                title: Text('')),
+            BottomNavigationBarItem(
               icon: Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Icon(
@@ -91,75 +97,20 @@ class _ProviderHomeState extends State<ProviderHome> {
                   size: 20.0,
                 ),
               ),
-              title: Text('')
+              title: Text(''),
             ),
-            
-             BottomNavigationBarItem(
-              icon: Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: Icon(
-                  FontAwesomeIcons.firstAid,
-                  size: 20.0,
+            BottomNavigationBarItem(
+                icon: Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Icon(
+                    FontAwesomeIcons.firstAid,
+                    size: 20.0,
+                  ),
                 ),
-              ),
-              title: Text('')
-            ),
+                title: Text('')),
           ],
         ),
       ),
-    );
-  }
-}
-
-class ProviderOrderInfo extends StatelessWidget {
-  const ProviderOrderInfo({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-     appBar: AppBar(
-       backgroundColor: Colors.lightBlueAccent,
-       title: Text('Orders'),),
-    );
-  }
-}
-
-class ProviderResourceList extends StatelessWidget {
-  const ProviderResourceList({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-     appBar: AppBar(
-       backgroundColor: Colors.lightBlueAccent,
-       title: Text('Donate'),),
-    );
-  }
-}
-
-class ProviderListView extends StatelessWidget {
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-     appBar: AppBar(
-       backgroundColor: Colors.grey,
-       title: Text('Hospital Requests'),),
-       body: SafeArea(child: 
-       Column(
-         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-         crossAxisAlignment: CrossAxisAlignment.stretch,
-         children: <Widget>[
-           
-         ],
-         ),
-        ),
     );
   }
 }
