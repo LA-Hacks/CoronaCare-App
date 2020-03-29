@@ -6,6 +6,22 @@ import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:expansion_card/expansion_card.dart';
 import 'package:la_hack/utilities/constants.dart';
 
+class Hospital {
+  final String name;
+  final String location;
+  final String address;
+  final String city_state;
+  Hospital({this.name, this.location, this.address, this.city_state});
+}
+
+class Request {
+  final String name;
+  final String standard;
+  final String hospital_id;
+  final int quantity;
+  Request({this.name, this.standard, this.hospital_id, this.quantity});
+}
+
 class HospitalFeedScreen extends StatefulWidget {
   @override
   _HospitalFeedScreenState createState() => _HospitalFeedScreenState();
@@ -17,7 +33,6 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
 
   int tileCount = 0;
   Widget tile;
-  
 
   Future<List<Hospital>> getData() async {
     NetworkHelper networkHelper = NetworkHelper('/hospitallist');
@@ -32,6 +47,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
     return hospitals;
   }
 
+  Future<List<Request>> getRequests() async {}
 
   void updateUI(dynamic data) {
     print(data);
@@ -63,7 +79,6 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
   void initState() {
     super.initState();
     getData();
-    
   }
 
   @override
@@ -72,7 +87,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: (AppBar(
-          title: Text('Hospital Requests'),
+          title: Text('All Hospital Requests'),
           backgroundColor: Colors.red,
         )),
         body: FutureBuilder(
@@ -102,7 +117,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   //Text(snapshot.data[index].city_name),
-                                 // Text(snapshot.data[index].address),
+                                  // Text(snapshot.data[index].address),
                                   Text(snapshot.data[index].name),
                                   Text(
                                     snapshot.data[index].location,
@@ -140,7 +155,10 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                             new BorderRadius.circular(18.0),
                                         side: BorderSide(color: Colors.red)),
                                     onPressed: () {
-                                      showModalBottomSheet(context: context, builder: (context) => SendRequestScreen());
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (context) =>
+                                              SendRequestScreen());
                                     },
                                     color: Colors.red,
                                     child: Text(
@@ -189,7 +207,6 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
 }
 
 class SendRequestScreen extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -214,7 +231,9 @@ class SendRequestScreen extends StatelessWidget {
                 color: Colors.redAccent,
               ),
             ),
-            SizedBox(height: 24,),
+            SizedBox(
+              height: 24,
+            ),
             TextField(
               autofocus: true,
               textAlign: TextAlign.center,
@@ -224,8 +243,10 @@ class SendRequestScreen extends StatelessWidget {
                 //newTaskTitle = newText;
               },
             ),
-              SizedBox(height: 24,),
-                TextField(
+            SizedBox(
+              height: 24,
+            ),
+            TextField(
               autofocus: true,
               textAlign: TextAlign.center,
               decoration: kTextFieldDecoration.copyWith(hintText: 'Quantity'),
@@ -234,7 +255,9 @@ class SendRequestScreen extends StatelessWidget {
                 //newTaskTitle = newText;
               },
             ),
-            SizedBox(height: 24,),
+            SizedBox(
+              height: 24,
+            ),
             FlatButton(
               child: Text(
                 'Send',
@@ -389,11 +412,3 @@ class CustomListItemTwo extends StatelessWidget {
                           isThreeLine: true,
                         ),
               */
-
-class Hospital {
-  final String name;
-  final String location;
-  final String address;
-  final String city_state;
-  Hospital({this.name, this.location,this.address,this.city_state});
-}

@@ -7,21 +7,23 @@ class NetworkHelper {
   static final String url = 'http://2c990005.ngrok.io';
   final String path;
   static String accessKey = "";
+  static String username;
   static String type;
 
-  Future login(String username, String password) async {
+  Future login(String uname, String password) async {
     final http.Response response = await http.post(
       url + path,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8'
       },
-      body: jsonEncode({"username": username, "password": password}),
+      body: jsonEncode({"username": uname, "password": password}),
     );
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       type = data['type'];
       accessKey = "Bearer " + data['access_token'];
+      username = uname;
       print(accessKey);
       print(type);
       return data['type'];
