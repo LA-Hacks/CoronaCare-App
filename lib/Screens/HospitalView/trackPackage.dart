@@ -45,11 +45,11 @@ class _TrackPackageState extends State<TrackPackage> {
     for (var s in shipments['shipments']) {
       String name;
       String address;
-      if (NetworkHelper.type == "provider") {
-        name = s['provider']['name'];
+      if (NetworkHelper.type == "hospital") {
+        name = "From: " + s['provider']['name'];
         address = s['provider']['address'] + " " + s['provider']['city_state'];
       } else {
-        name = s['hospital']['name'];
+        name = "To: " + s['hospital']['name'];
         address = s['hospital']['address'] + " " + s['provider']['city_state'];
       }
 
@@ -103,7 +103,7 @@ class _TrackPackageState extends State<TrackPackage> {
                     height: 8,
                   ),
                   Text(
-                    '${supplies.length} Incoming Shipments',
+                    '${supplies.length} ${NetworkHelper.type == "hospital" ? "Incoming" : "Outgoing"} Shipments',
                     style: TextStyle(color: Colors.white),
                   )
                 ],
@@ -244,7 +244,7 @@ class SupplyTile extends StatelessWidget {
                         Row(
                           children: <Widget>[
                             Text(
-                              'From: ' + supply.provider,
+                              supply.provider,
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 17,

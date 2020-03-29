@@ -4,7 +4,7 @@ import 'dart:convert';
 class NetworkHelper {
   NetworkHelper(this.path);
 
-  static final String url = 'https://coronacare-272603.appspot.com';
+  static final String url = 'https://2c990005.ngrok.io';
   final String path;
   static String accessKey = "";
   static String username;
