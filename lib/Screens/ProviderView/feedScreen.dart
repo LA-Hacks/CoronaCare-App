@@ -6,20 +6,6 @@ import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:expansion_card/expansion_card.dart';
 import 'package:la_hack/utilities/constants.dart';
 
-class Hospital {
-  final String name;
-  final String location;
-  Hospital({this.name, this.location});
-}
-
-class Request {
-  final String resource_name;
-  final String standard;
-  final Hospital hospital;
-  final int quantity;
-  Request({this.resource_name, this.standard, this.hospital, this.quantity});
-}
-
 class HospitalFeedScreen extends StatefulWidget {
   @override
   _HospitalFeedScreenState createState() => _HospitalFeedScreenState();
@@ -27,34 +13,21 @@ class HospitalFeedScreen extends StatefulWidget {
 
 class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
   var hospital;
-  var request;
 
   int tileCount = 0;
   Widget tile;
 
-  NetworkHelper hospitalList = NetworkHelper('/hospitallist');
-  NetworkHelper requestList = NetworkHelper('/requestlistall');
+  Future<List<Hospital>> getData() async {
+    NetworkHelper networkHelper = NetworkHelper('/hospitallist');
+    var data = await networkHelper.getData();
 
-  Future<List<Request>> getData() async {
-    var hospitals = await hospitalList.getData();
-    Map<String, Hospital> hospitalsDict = Map<String, Hospital>();
-    for (var u in hospitals['hospitals']) {
-      hospitalsDict[u['_id']['\$oid'].toString()] =
-          Hospital(name: u['name'], location: u['city_state']);
+    List<Hospital> hospitals = [];
+    for (var u in data['hospitals']) {
+      Hospital hospital = Hospital(name: u['name'], location: u['city_state']);
+      hospitals.add(hospital);
     }
-
-    var requests = await requestList.getData();
-
-    List<Request> requestsList = [];
-    for (var r in requests['requests']) {
-      requestsList.add(Request(
-          hospital: hospitalsDict[r['hospital_id']],
-          resource_name: r['resource_name'],
-          standard: r['standard'],
-          quantity: r['quantity']));
-    }
-
-    return requestsList;
+    print(hospitals.length);
+    return hospitals;
   }
 
   void updateUI(dynamic data) {
@@ -95,7 +68,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: (AppBar(
-          title: Text('All Hospital Requests'),
+          title: Text('Hospital Requests'),
           backgroundColor: Colors.red,
         )),
         body: FutureBuilder(
@@ -126,12 +99,12 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                 children: <Widget>[
                                   //Text(snapshot.data[index].city_name),
                                   // Text(snapshot.data[index].address),
-                                  Text(snapshot.data[index].hospital.name),
+                                  Text(snapshot.data[index].name),
                                   Text(
-                                    snapshot.data[index].hospital.location,
+                                    snapshot.data[index].location,
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 15),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -141,61 +114,42 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                 height: 1.0,
                               ),
                               Align(
-                                alignment: Alignment.bottomLeft,
+                                alignment: Alignment.centerLeft,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0,
                                     vertical: 8.0,
                                   ),
                                   child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Row(
-                                        children: <Widget>[
-                                        
-                                       
-                                          Text(
-                                            'Item : ' +
-                                                snapshot
-                                                    .data[index].resource_name,
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                  
-                                      Row(
-                                        children: <Widget>[
-                                          Text('Type : ' +
-                                              snapshot.data[index].standard, style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500,
-                                            ),),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Text(
-                                            'Quantity : ' +
-                                                snapshot.data[index].quantity
-                                                    .toString(),
-                                                    style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                    children: <Widget>[Text('Requesting')],
                                   ),
                                 ),
+                              ),
+                              ButtonBar(
+                                alignment: MainAxisAlignment.end,
+                                buttonHeight: 52.0,
+                                buttonMinWidth: 90.0,
+                                children: <Widget>[
+                                  FlatButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            new BorderRadius.circular(18.0),
+                                        side: BorderSide(color: Colors.red)),
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (context) =>
+                                              SendRequestScreen());
+                                    },
+                                    color: Colors.red,
+                                    child: Text(
+                                      'Add',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -439,3 +393,11 @@ class CustomListItemTwo extends StatelessWidget {
                           isThreeLine: true,
                         ),
               */
+
+class Hospital {
+  final String name;
+  final String location;
+  final String address;
+  final String city_state;
+  Hospital({this.name, this.location, this.address, this.city_state});
+}
