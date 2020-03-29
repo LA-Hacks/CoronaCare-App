@@ -1,29 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:la_hack/components/rounded_button.dart';
 import 'package:la_hack/utilities/constants.dart';
+import 'package:la_hack/utilities/networking.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:la_hack/Screens/HospitalView/hospital_home.dart';
+import 'package:la_hack/Screens/ProviderView/provider_home.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  static const String id = 'registration_screen';
+class LoginScreen extends StatefulWidget {
+  static const String id = 'login_screen';
 
   @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
- // final _auth = FirebaseAuth.instance;
+class _LoginScreenState extends State<LoginScreen> {
+  // final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
+  String type;
 
-  String email;
+  NetworkHelper hospitalList = NetworkHelper("/login");
+
+  Future login() async {
+    type = await hospitalList.login(username, password);
+
+    if (type == 'hospital') {
+      Navigator.pushNamed(context, HospitalHome.id);
+    }
+
+    if (type == 'provider') {
+      Navigator.pushNamed(context, ProviderHome.id);
+    }
+  }
+
+  String username;
   String password;
- @override
-  void dispose() { 
-    
+  @override
+  void dispose() {
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +53,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-             
               SizedBox(
                 height: 48.0,
               ),
@@ -44,11 +60,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (value) {
-                    email = value;
+                    username = value;
                     //Do something with the user input.
                   },
                   decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Enter your Email')),
+                      hintText: 'Enter your Username')),
               SizedBox(
                 height: 8.0,
               ),
@@ -60,11 +76,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     //Do something with the user input.
                   },
                   decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Enter your password')),
+                      hintText: 'Enter your Password')),
               SizedBox(
                 height: 24.0,
               ),
-              
+              RoundedButton(
+                title: 'Login',
+                color: Colors.white,
+                onPressed: () {
+                  login();
+                },
+              )
             ],
           ),
         ),

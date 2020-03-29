@@ -6,11 +6,35 @@ class NetworkHelper {
 
   static final String url = 'http://2c990005.ngrok.io';
   final String path;
+  static String accessKey = "";
+  static String type;
 
-  Future getData() async {
-    http.Response response = await http.get(url + path);
+  Future login(String username, String password) async {
+    final http.Response response = await http.post(
+      url + path,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+      body: jsonEncode({"username": username, "password": password}),
+    );
 
     if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      type = data['type'];
+      accessKey = "Bearer " + data['access_token'];
+      print(accessKey);
+      print(type);
+      return data['type'];
+    } else {
+      throw Exception('Failed to login.');
+    }
+  }
+
+  Future getData() async {
+    http.Response response = await http
+        .get(url + path, headers: <String, String>{"Authorization": accessKey});
+
+    if (response.statusCode < 300) {
       String data = response.body;
       var decodedData = jsonDecode(data);
       return decodedData;
@@ -24,12 +48,13 @@ class NetworkHelper {
       url + path,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        "Authorization": accessKey
       },
       body: jsonEncode(json),
     );
     print(response.body);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode < 300) {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to create album.');

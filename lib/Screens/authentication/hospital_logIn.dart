@@ -1,3 +1,4 @@
+import 'package:la_hack/Screens/authentication/registration_screen.dart';
 import 'package:la_hack/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:la_hack/components/rounded_button.dart';
@@ -7,10 +8,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:la_hack/components/resuable_card.dart';
 import 'package:la_hack/components/icon_content.dart';
 import 'package:la_hack/utilities/constants.dart';
+import 'package:la_hack/utilities/networking.dart';
 import 'package:la_hack/Screens/HospitalView/hospital_home.dart';
+import 'registration_screen.dart';
+
+class Hospital {
+  const Hospital(this.name, this.id, this.icon);
+  final String name;
+  final String id;
+  final Icon icon;
+}
 
 class Hoppital_Registration extends StatefulWidget {
-  static const String id = 'login_screen';
+  static const String id = 'Hospital_registration_screen';
 
   @override
   _Hoppital_RegistrationState createState() => _Hoppital_RegistrationState();
@@ -21,9 +31,34 @@ class _Hoppital_RegistrationState extends State<Hoppital_Registration> {
 
   bool showSpinner = false;
 
-  String hoppitalName;
-  String idNumber;
-  String address;
+  String username;
+  String password;
+  String hospital_id;
+  String phone_number;
+
+  NetworkHelper hospitalList = NetworkHelper("/hospitallist");
+  NetworkHelper registerHospital = NetworkHelper("/register");
+
+  List<Hospital> hospitals = [];
+  Hospital selectedHospital;
+
+  Future getHospitals() async {
+    var hospitalResponse = await hospitalList.getData();
+
+    for (var i in hospitalResponse['hospitals']) {
+      Hospital hospital = Hospital(
+          i['name'], i['_id']['\$oid'].toString(), Icon(Icons.android));
+      setState(() {
+        hospitals.add(hospital);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getHospitals();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +77,13 @@ class _Hoppital_RegistrationState extends State<Hoppital_Registration> {
                   Icon(
                     FontAwesomeIcons.hospital,
                     color: Colors.white,
-                    size: 200,
+                    size: 85,
                   ),
                 ],
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               Center(
                 child: Text(
                   'Hospital',
@@ -54,7 +91,6 @@ class _Hoppital_RegistrationState extends State<Hoppital_Registration> {
                     color: Colors.white,
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
-                    
                   ),
                 ),
               ),
@@ -65,41 +101,83 @@ class _Hoppital_RegistrationState extends State<Hoppital_Registration> {
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (value) {
-                    hoppitalName = value;
+                    username = value;
                   },
-                  decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Name')),
+                  decoration:
+                      kTextFieldDecoration.copyWith(hintText: 'Username')),
               SizedBox(
                 height: 8.0,
               ),
               TextField(
-                  textAlign: TextAlign.center,
-                  obscureText: true,
-                  onChanged: (value) {
-                    idNumber = value;
-                    //Do something with the user input.
-                  },
-                  decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'ID Number'),),
+                textAlign: TextAlign.center,
+                obscureText: true,
+                onChanged: (value) {
+                  password = value;
+                  //Do something with the user input.
+                },
+                decoration: kTextFieldDecoration.copyWith(hintText: 'Password'),
+              ),
               SizedBox(
                 height: 24.0,
               ),
-                TextField(
-                  textAlign: TextAlign.center,
-                  obscureText: true,
-                  onChanged: (value) {
-                    address = value;
-                    //Do something with the user input.
-                  },
-                  decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Address'),),
+              TextField(
+                textAlign: TextAlign.center,
+                onChanged: (value) {
+                  phone_number = value;
+                  //Do something with the user input.
+                },
+                decoration:
+                    kTextFieldDecoration.copyWith(hintText: 'Phone Number'),
+              ),
+              SizedBox(
+                height: 24.0,
+              ),
+              DropdownButton<Hospital>(
+                hint: Text('Select a Hospital'),
+                value: selectedHospital,
+                onChanged: (Hospital value) {
+                  setState(() {
+                    selectedHospital = value;
+                  });
+                },
+                items: hospitals.map((Hospital hospital) {
+                  return DropdownMenuItem<Hospital>(
+                    value: hospital,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Row(
+                        children: <Widget>[
+                          hospital.icon,
+                          SizedBox(width: 10),
+                          Text(
+                            hospital.name,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
               RoundedButton(
                 title: 'Register',
                 color: Colors.red,
                 onPressed: () {
-                  Navigator.popAndPushNamed(context, HospitalHome.id);
-                }
-                ,
+                  if (username != null &&
+                      password != null &&
+                      phone_number != null &&
+                      selectedHospital != null) {
+                    setState(() {
+                      registerHospital.sendData({
+                        "username": username,
+                        "password": password,
+                        "provider_id": selectedHospital.id,
+                        "phone_number": phone_number,
+                      });
+                    });
+
+                    Navigator.popAndPushNamed(context, LoginScreen.id);
+                  }
+                },
                 /*
                 onPressed: () async {
                   setState(() {

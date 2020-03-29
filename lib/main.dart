@@ -11,7 +11,7 @@ import 'package:la_hack/Screens/authentication/hospital_logIn.dart';
 import 'package:la_hack/Screens/authentication/provider_logIn.dart';
 //PROVIDER SCREENS
 import 'package:la_hack/Screens/ProviderView/provider_home.dart';
-
+import 'package:la_hack/Screens/authentication/registration_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,6 +30,8 @@ class MyApp extends StatelessWidget {
         //Registration
         WelcomeScreen.id: (context) => WelcomeScreen(),
 
+        LoginScreen.id: (context) => LoginScreen(),
+
         //Registration Screen
         Hospital_or_Provider.id: (context) => Hospital_or_Provider(),
         Hoppital_Registration.id: (context) => Hoppital_Registration(),
@@ -40,9 +42,6 @@ class MyApp extends StatelessWidget {
 
         //Hospital Pages
         HospitalHome.id: (context) => HospitalHome(),
-
-       
-
       },
     );
   }

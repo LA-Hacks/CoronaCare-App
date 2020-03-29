@@ -1,3 +1,4 @@
+import 'package:la_hack/Screens/authentication/registration_screen.dart';
 import 'package:la_hack/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:la_hack/components/rounded_button.dart';
@@ -12,6 +13,7 @@ import 'package:la_hack/utilities/networking.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'registration_screen.dart';
 
 // get the data for the list of providers
 class Provider {
@@ -52,8 +54,6 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
         providers.add(provider);
       });
     }
-
-    print("finished reloading");
   }
 
   @override
@@ -61,8 +61,6 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
     super.initState();
     getProviders();
   }
-
-  void submit() {}
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +80,7 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                   Icon(
                     FontAwesomeIcons.user,
                     color: Colors.white,
-                    size: 125,
+                    size: 85,
                   ),
                 ],
               ),
@@ -108,15 +106,15 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                   onChanged: (value) {
                     username = value;
                   },
-                  decoration: kTextFieldDecoration.copyWith(hintText: 'Name')),
+                  decoration:
+                      kTextFieldDecoration.copyWith(hintText: 'Username')),
               SizedBox(
-                height: 24.0,
+                height: 8.0,
               ),
               TextField(
                 textAlign: TextAlign.center,
-                keyboardType: TextInputType.emailAddress,
+                obscureText: true,
                 onChanged: (value) {
-                  //email = value;
                   password = value;
                 },
                 decoration: kTextFieldDecoration.copyWith(hintText: 'Password'),
@@ -148,14 +146,17 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                 items: providers.map((Provider provider) {
                   return DropdownMenuItem<Provider>(
                     value: provider,
-                    child: Row(
-                      children: <Widget>[
-                        provider.icon,
-                        SizedBox(width: 10),
-                        Text(
-                          provider.name,
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Row(
+                        children: <Widget>[
+                          provider.icon,
+                          SizedBox(width: 10),
+                          Text(
+                            provider.name,
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }).toList(),
@@ -177,7 +178,7 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                       });
                     });
 
-                    Navigator.popAndPushNamed(context, ProviderHome.id);
+                    Navigator.popAndPushNamed(context, LoginScreen.id);
                   }
                 },
                 /*

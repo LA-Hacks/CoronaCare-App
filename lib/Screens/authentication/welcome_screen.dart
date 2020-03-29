@@ -5,7 +5,6 @@ import 'hospital_provider.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:la_hack/components/rounded_button.dart';
 
-
 class WelcomeScreen extends StatefulWidget {
   static const String id = 'welcome_screen';
 
@@ -53,9 +52,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             Row(
               children: <Widget>[
                 TypewriterAnimatedTextKit(
-                  text: ['NO NAME'],
+                  text: ['CoronaCare'],
                   textStyle: TextStyle(
-                    fontSize: 60.0,
+                    fontSize: 50.0,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -68,7 +67,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               title: 'Log In',
               color: Colors.redAccent,
               onPressed: () {
-                Navigator.pushNamed(context, Hoppital_Registration.id);
+                Navigator.pushNamed(context, LoginScreen.id);
               },
             ),
             RoundedButton(
