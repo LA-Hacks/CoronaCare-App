@@ -31,6 +31,7 @@ class _TrackPackageState extends State<TrackPackage> {
                           ),
                           child: FAProgressBar(
                             currentValue: 80,
+                            maxValue: 100,
                             displayText: '\$',
                             progressColor: Colors.lightBlueAccent,
                             borderRadius: 5,

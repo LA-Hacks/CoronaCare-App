@@ -10,6 +10,7 @@ class HospitalSupplies extends StatefulWidget {
 }
 
 class _HospitalSuppliesState extends State<HospitalSupplies> {
+  
   List<Supply> supplies = [
     Supply(name: 'Mask 1',quantity: '500'),
     Supply(name: 'Mask 2',quantity: '1000'),
