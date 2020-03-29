@@ -142,7 +142,7 @@ class SupplyTile extends StatelessWidget {
         children: <Widget>[
           ExpansionTileCard(
             leading: Icon(
-              FontAwesomeIcons.box,
+              FontAwesomeIcons.shippingFast,
               size: 50,
             ),
             title: Container(
