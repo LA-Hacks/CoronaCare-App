@@ -57,9 +57,9 @@ class _ProviderHomeState extends State<ProviderHome> {
   }
 
   final List<Widget> _children = [
-     MySupplies(),
-    TrackPackage(),
     HospitalFeedScreen(),
+    TrackPackage(),
+    MySupplies(),
     
   ];
   @override

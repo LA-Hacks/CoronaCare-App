@@ -69,7 +69,7 @@ class _Hospital_or_ProviderState extends State<Hospital_or_Provider> {
                       
                       Navigator.popAndPushNamed(context, Provider_Registration.id);
                     },
-                    color: kActiveCardColor,
+                    color: kInActiveCardColor,
                     cardChild: IconContent(
                       iconCard: FontAwesomeIcons.user,
                       text: 'Provider',
@@ -87,6 +87,8 @@ class _Hospital_or_ProviderState extends State<Hospital_or_Provider> {
     );
   }
 }
+
+
 
 /*
 Expanded(
