@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'hospital_logIn.dart';
 import 'registration_screen.dart';
 import 'hospital_provider.dart';
@@ -49,12 +50,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            Icon(FontAwesomeIcons.bookMedical,color: Colors.white,size: 50,),
             Row(
               children: <Widget>[
                 TypewriterAnimatedTextKit(
                   text: ['CoronaCare'],
                   textStyle: TextStyle(
                     fontSize: 50.0,
+                    color: Colors.white,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
