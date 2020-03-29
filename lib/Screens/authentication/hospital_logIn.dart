@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:la_hack/components/resuable_card.dart';
 import 'package:la_hack/components/icon_content.dart';
 import 'package:la_hack/utilities/constants.dart';
+import 'package:la_hack/Screens/HospitalView/hospital_home.dart';
 
 class Hoppital_Registration extends StatefulWidget {
   static const String id = 'login_screen';
@@ -94,8 +95,11 @@ class _Hoppital_RegistrationState extends State<Hoppital_Registration> {
                       hintText: 'Address'),),
               RoundedButton(
                 title: 'Register',
-                color: Colors.lightBlueAccent,
-                onPressed: () {},
+                color: Colors.red,
+                onPressed: () {
+                  Navigator.popAndPushNamed(context, HospitalHome.id);
+                }
+                ,
                 /*
                 onPressed: () async {
                   setState(() {

@@ -1,18 +1,30 @@
+import 'package:la_hack/utilities/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:la_hack/components/rounded_button.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:la_hack/Screens/authentication/provider_logIn.dart';
+import 'package:la_hack/components/resuable_card.dart';
+import 'package:la_hack/components/icon_content.dart';
+import 'package:la_hack/utilities/constants.dart';
+import 'package:la_hack/Screens/ProviderView/provider_home.dart';
 import 'package:la_hack/utilities/networking.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'feedScreen.dart';
+import 'trackPackage.dart';
+import 'hospitalSupplies.dart';
+// get the data for the list of providers
 
-
-
-class ProviderHome extends StatefulWidget {
-  static const String id = "Provider_Home";
+class HospitalHome extends StatefulWidget {
+  static const String id = "Hospital_Home";
 
   @override
-  _ProviderHomeState createState() => _ProviderHomeState();
+  _HospitalHomeState createState() => _HospitalHomeState();
 }
 
-class _ProviderHomeState extends State<ProviderHome> {
+class _HospitalHomeState extends State<HospitalHome> {
   int _currentIndex = 0;
   String username;
   var hospital;
@@ -56,9 +68,11 @@ class _ProviderHomeState extends State<ProviderHome> {
   }
 
   final List<Widget> _children = [
-    Container(),
-    Container(),
-    Container(),
+    HospitalSupplies(),
+    TrackPackage(),
+    HospitalFeedScreen(),
+
+    
   ];
   @override
   Widget build(BuildContext context) {

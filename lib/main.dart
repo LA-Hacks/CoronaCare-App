@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_hack/Screens/HospitalView/hospital_home.dart';
 import 'package:la_hack/Screens/authentication/welcome_screen.dart';
 
 import 'package:la_hack/Screens/authentication/hospital_provider.dart';
@@ -36,6 +37,9 @@ class MyApp extends StatelessWidget {
 
         //Provider Pages
         ProviderHome.id: (context) => ProviderHome(),
+
+        //Hospital Pages
+        HospitalHome.id: (context) => HospitalHome(),
 
        
 
