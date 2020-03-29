@@ -69,8 +69,9 @@ class _HospitalHomeState extends State<HospitalHome> {
 
   final List<Widget> _children = [
     HospitalFeedScreen(),
-    TrackPackage(),
+    
     HospitalSupplies(),
+    TrackPackage(),
     
 
     
