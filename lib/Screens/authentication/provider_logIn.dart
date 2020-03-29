@@ -14,10 +14,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 // get the data for the list of providers
-class Provider_id {
-  const Provider_id(this.name, this.location);
+class Item {
+  const Item(this.name, this.icon);
+  final String name;
+  final Icon icon;
+}
+
+class Provider {
   final String name;
   final String location;
+  final String id;
+
+  Provider({this.name, this.location, this.id});
 }
 
 class Provider_Registration extends StatefulWidget {
@@ -33,60 +41,59 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
   String username;
   String password;
   String provider_id;
+  String phone_number;
 
-  var providers;
+  List providerNames = [];
+  List providerLocation = [];
+  NetworkHelper providerList = NetworkHelper("/providerlist");
+  NetworkHelper registerProvider = NetworkHelper("/register");
 
-  void getProviders() async {
+  Future<List<Provider>> getProviders() async {
     var providersResponse = await providerList.getData();
-    providers = providersResponse['providers/'];
-    print(providers);
-    print(providers.toString());
-  }
-
-  List _providerDopDownList = ["Birds", "Apples"];
-
-  List<DropdownMenuItem<String>> _dropDownMenuItems;
-  String _selected_provider;
-
-  List<DropdownMenuItem<String>> buildAndGetDropDownItems(
-      List providerDopDownList) {
-    List<DropdownMenuItem<String>> items = List();
-    for (String i in providerDopDownList) {
-      items.add(
-        DropdownMenuItem(
-          value: i,
-          child: Container(
-            
-            child: 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(i,),
-              ],
-              ),
-        ),
-        ),
-      );
+    List<Provider> providers = [];
+    print('hello world');
+    print(providersResponse);
+    print(providersResponse['providers']);
+    //providers = providersResponse['providers'];
+    for (var i in providersResponse['providers']) {
+      Provider provider = Provider(
+          name: i['name'],
+          location: i['zip'],
+          id: i['_id']['\$oid'].toString());
+      providers.add(provider);
+      providerNames.add(provider.name);
+      providerLocation.add(provider.location);
+      print(provider);
+      print('Name:' + provider.name);
+      print(provider.id);
+      print('gsertghsethgrtn');
     }
-    return items;
+    return providers;
   }
+
+  Item selectedUser;
+  List<Item> users = <Item>[
+    Item(
+      'Android',
+      Icon(Icons.android),
+    ),
+     Item(
+      'Android',
+      Icon(Icons.android),
+    ),
+     Item(
+      'Android',
+      Icon(Icons.android),
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
     getProviders();
-    _dropDownMenuItems = buildAndGetDropDownItems(_providerDopDownList);
-    _selected_provider = _dropDownMenuItems[0].value;
   }
 
-  void changeDropDownItem(String selectedProvider) {
-    setState(() {
-      _selected_provider = selectedProvider;
-    });
-  }
-
-  NetworkHelper providerList = NetworkHelper("/providerlist");
-  NetworkHelper registerProvider = NetworkHelper("/register");
+  void submit() {}
 
   @override
   Widget build(BuildContext context) {
@@ -103,11 +110,11 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
             children: <Widget>[
               Column(
                 children: <Widget>[
-                  //  Icon(
-                  //   FontAwesomeIcons.user,
-                  //   color: Colors.white,
-                  ////   size: 200,
-                  // ),
+                  Icon(
+                    FontAwesomeIcons.user,
+                    color: Colors.white,
+                    size: 125,
+                  ),
                 ],
               ),
               SizedBox(
@@ -137,41 +144,63 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                 height: 24.0,
               ),
               TextField(
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.emailAddress,
-                  onChanged: (value) {
-                    //email = value;
-                    password = value;
-                  },
-                  decoration:
-                      kTextFieldDecoration.copyWith(hintText: 'Password')),
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.emailAddress,
+                onChanged: (value) {
+                  //email = value;
+                  password = value;
+                },
+                decoration: kTextFieldDecoration.copyWith(hintText: 'Password'),
+              ),
               SizedBox(
                 height: 24.0,
               ),
-              DropdownButton(
-                items: _dropDownMenuItems,
-                value: _selected_provider,
-                onChanged: changeDropDownItem,
-              ),
-              /*TextField(
+              TextField(
                 textAlign: TextAlign.center,
-                obscureText: true,
+                keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
-                  provider_id = value;
-                  //Do something with the user input.
+                  //email = value;
+                  phone_number = value;
                 },
                 decoration:
-                    kTextFieldDecoration.copyWith(hintText: 'Provider ID'),
-              ),*/
+                    kTextFieldDecoration.copyWith(hintText: 'Phone Number'),
+              ),
+              SizedBox(
+                height: 24.0,
+              ),
+              DropdownButton<Item>(
+                hint: Text('Select Item'),
+                value: selectedUser,
+                onChanged: (Item value) {
+                  setState(() {
+                    selectedUser = value;
+                  });
+                },
+                items: users.map((Item user) {
+                  return DropdownMenuItem<Item>(
+                    value: user,
+                    child: Row(
+                      children: <Widget>[
+                        user.icon,
+                        SizedBox(width: 10),
+                        Text(
+                          user.name,
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
               RoundedButton(
                 title: 'Register',
-                color: Colors.lightBlueAccent,
+                color: Colors.red,
                 onPressed: () {
                   setState(() {
                     registerProvider.sendData({
                       "username": username,
                       "password": password,
                       "provider_id": provider_id,
+                      "phone_number": phone_number,
                     });
                   });
 

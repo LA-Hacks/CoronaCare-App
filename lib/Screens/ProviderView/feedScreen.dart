@@ -47,7 +47,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       padding: const EdgeInsets.all(8),
-      itemCount: 2,
+      itemCount: tileCount,
       itemBuilder: (BuildContext context, index) {
         return ListTile(
           title: Text('${hospital['name']}'),
