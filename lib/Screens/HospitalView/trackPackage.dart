@@ -4,46 +4,81 @@ import 'package:la_hack/utilities/constants.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
+import 'package:la_hack/utilities/networking.dart';
 
 class TrackPackage extends StatefulWidget {
   @override
   _TrackPackageState createState() => _TrackPackageState();
 }
 
+class Supply {
+  final String id;
+  final String name;
+  final int quantity;
+  final String standard;
+  final String provider;
+  final String address;
+  bool isDeleated;
+  Supply(
+      {this.id,
+      this.name,
+      this.quantity,
+      this.standard,
+      this.provider,
+      this.address,
+      this.isDeleated});
+  void toggleDone() {
+    isDeleated = !isDeleated;
+  }
+}
+
 class _TrackPackageState extends State<TrackPackage> {
-  List<Supply> supplies = [
-    Supply(name: 'Ronald Regan UCLA Medical Center', quantity: 'Status'),
-  ];
+  List<Supply> supplies = [];
+
+  NetworkHelper getShipments = NetworkHelper('/shipmentlist');
+
+  Future getData() async {
+    var shipments = await getShipments.getData();
+
+    print(shipments);
+
+    for (var s in shipments['shipments']) {
+      String name;
+      String address;
+      if (NetworkHelper.type == "provider") {
+        name = s['provider']['name'];
+        address = s['provider']['address'] + " " + s['provider']['city_state'];
+      } else {
+        name = s['hospital']['name'];
+        address = s['hospital']['address'] + " " + s['provider']['city_state'];
+      }
+
+      setState(() {
+        supplies.add(Supply(
+            id: s['_id']['\$oid'],
+            name: s['resource_name'],
+            quantity: s['quantity'],
+            standard: s['standard'],
+            provider: name,
+            address: address));
+      });
+    }
+
+    print(supplies.length);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
       appBar: AppBar(
-        title: Text('Add Shipment'),
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) =>
-                        AddTaskScreen((newSupplyTitle, newSupplyQuantity) {
-                          setState(() {
-                            supplies.add(Supply(
-                                name: newSupplyTitle,
-                                quantity: newSupplyQuantity));
-                          });
-                        }));
-              },
-            ),
-          )
-        ],
+        title: Text('Shipments'),
         backgroundColor: Colors.red,
       ),
       body: Column(
@@ -68,7 +103,7 @@ class _TrackPackageState extends State<TrackPackage> {
                     height: 8,
                   ),
                   Text(
-                    '${supplies.length} Incoming Orders',
+                    '${supplies.length} Incoming Shipments',
                     style: TextStyle(color: Colors.white),
                   )
                 ],
@@ -97,16 +132,6 @@ class _TrackPackageState extends State<TrackPackage> {
   }
 }
 
-class Supply {
-  final String name;
-  final String quantity;
-  bool isDeleated;
-  Supply({this.name, this.quantity, this.isDeleated});
-  void toggleDone() {
-    isDeleated = !isDeleated;
-  }
-}
-
 class SupplyList extends StatefulWidget {
   final List<Supply> supplies;
   SupplyList(this.supplies);
@@ -120,20 +145,20 @@ class _SupplyListState extends State<SupplyList> {
     return ListView.builder(
         itemCount: widget.supplies.length,
         itemBuilder: (context, index) {
-          return SupplyTile(
-            productName: widget.supplies[index].name,
-            quantity: widget.supplies[index].quantity,
-            //add callback too if needed
-          );
+          String status = "Received";
+          if (NetworkHelper.type == "provider") {
+            status = "Sent";
+          }
+          return SupplyTile(widget.supplies[index], status);
         });
   }
 }
 
 class SupplyTile extends StatelessWidget {
-  final String productName;
-  final String quantity;
+  final Supply supply;
+  final String status;
 
-  SupplyTile({this.productName, this.quantity});
+  SupplyTile(this.supply, this.status);
 
   @override
   Widget build(BuildContext context) {
@@ -150,14 +175,14 @@ class SupplyTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    productName,
+                    supply.name,
                     style: TextStyle(color: Colors.black, fontSize: 17),
                   ),
                   SizedBox(
                     height: 5,
                   ),
                   Text(
-                    'Out For Dilevery',
+                    supply.standard,
                     style: TextStyle(color: Colors.grey, fontSize: 15),
                   ),
                   SizedBox(
@@ -204,13 +229,19 @@ class SupplyTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        quantity,
+                        "Count: " + supply.quantity.toString(),
                         style: TextStyle(
                           color: Colors.black,
                         ),
                       ),
                       Text(
-                        'Almost there',
+                        'From: ' + supply.provider,
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        supply.address,
                         style: TextStyle(
                           color: Colors.black,
                         ),
@@ -233,13 +264,11 @@ class SupplyTile extends StatelessWidget {
                     child: Row(
                       children: <Widget>[
                         Text(
-                          'Dilevered',
+                          status,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 10.0,),
-                        Icon(Icons.check_box_outline_blank),
                       ],
                     ),
                   ),

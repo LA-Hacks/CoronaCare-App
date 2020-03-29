@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:la_hack/Screens/authentication/provider_logIn.dart';
 import 'package:la_hack/utilities/networking.dart';
 import 'package:la_hack/Screens/HospitalView/feedScreen.dart';
-import 'trackPackageScreen.dart';
+import 'package:la_hack/Screens/HospitalView/trackPackage.dart';
 import 'mySupplies_Screen.dart';
 
 class ProviderHome extends StatefulWidget {
