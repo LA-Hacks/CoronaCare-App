@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:la_hack/components/rounded_button.dart';
 import 'package:la_hack/utilities/constants.dart';
 import 'package:la_hack/utilities/networking.dart';
@@ -44,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Padding(
@@ -53,6 +54,19 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              Icon(
+                FontAwesomeIcons.user,
+                color: Colors.white,
+                size: 150,
+              ),
+              Center(
+                child: Text('Log In',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 50,
+                  fontWeight: FontWeight.w800
+                ),),
+              ),
               SizedBox(
                 height: 48.0,
               ),
