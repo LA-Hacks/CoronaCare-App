@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:la_hack/utilities/constants.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:la_hack/utilities/networking.dart';
 
 class MySupplies extends StatefulWidget {
   @override
@@ -11,9 +12,8 @@ class MySupplies extends StatefulWidget {
 
 class _MySuppliesState extends State<MySupplies> {
   List<Supply> supplies = [
-    Supply(name: 'Mask 1',quantity: '500'),
-    Supply(name: 'Mask 2',quantity: '1000'),
-    Supply(name: 'Mask 3',quantity: '200'),
+    Supply(name: 'M-95 Mask', quantity: '500'),
+    Supply(name: 'M-10 Mask', quantity: '1000'),
   ];
 
   @override
@@ -32,12 +32,15 @@ class _MySuppliesState extends State<MySupplies> {
               ),
               onPressed: () {
                 showModalBottomSheet(
-                    context: context, builder: (context) => AddTaskScreen((newSupplyTitle,newSupplyQuantity){
-                      setState(() {
-                        supplies.add(Supply(name: newSupplyTitle,quantity: newSupplyQuantity));
-                      });
-                      
-                    }));
+                    context: context,
+                    builder: (context) =>
+                        AddTaskScreen((newSupplyTitle, newSupplyQuantity) {
+                          setState(() {
+                            supplies.add(Supply(
+                                name: newSupplyTitle,
+                                quantity: newSupplyQuantity));
+                          });
+                        }));
               },
             ),
           )
@@ -56,7 +59,7 @@ class _MySuppliesState extends State<MySupplies> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'UserName',
+                    NetworkHelper.username,
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
@@ -113,29 +116,25 @@ class SupplyList extends StatefulWidget {
 }
 
 class _SupplyListState extends State<SupplyList> {
-
-  
-
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: widget.supplies.length,
-      itemBuilder: (context,index){
-        return SupplyTile(
-          productName: widget.supplies[index].name,
-          quantity: widget.supplies[index].quantity,
-          //add callback too if needed
+        itemCount: widget.supplies.length,
+        itemBuilder: (context, index) {
+          return SupplyTile(
+            productName: widget.supplies[index].name,
+            quantity: widget.supplies[index].quantity,
+            //add callback too if needed
           );
-    });
+        });
   }
 }
 
 class SupplyTile extends StatelessWidget {
-
   final String productName;
   final String quantity;
 
-  SupplyTile({this.productName,this.quantity});
+  SupplyTile({this.productName, this.quantity});
 
   @override
   Widget build(BuildContext context) {
@@ -144,18 +143,31 @@ class SupplyTile extends StatelessWidget {
         children: <Widget>[
           ExpansionTileCard(
             leading: Icon(
-              FontAwesomeIcons.user,
+              FontAwesomeIcons.shippingFast,
               size: 50,
             ),
             title: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    productName,
-                    style: TextStyle(color: Colors.grey, fontSize: 15),
-                  )
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      productName,
+                      style: TextStyle(color: Colors.black, fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      'Quantity : ' + quantity,
+                      style: TextStyle(color: Colors.grey, fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                  ],
+                ),
               ),
             ),
             children: <Widget>[
@@ -171,7 +183,12 @@ class SupplyTile extends StatelessWidget {
                     vertical: 8.0,
                   ),
                   child: Column(
-                    children: <Widget>[Text(quantity)],
+                    children: <Widget>[
+                      Text(
+                        '',
+                       // quantity,
+                      )
+                    ],
                   ),
                 ),
               ),
@@ -243,7 +260,6 @@ class AddTaskScreen extends StatelessWidget {
               onChanged: (newText) {
                 //newTaskTitle = newText;
                 newSupplyTitle = newText;
-              
               },
             ),
             SizedBox(
@@ -272,8 +288,8 @@ class AddTaskScreen extends StatelessWidget {
               color: Colors.redAccent,
               onPressed: () {
                 //print(newSupplyTitle);
-              //print(supplyCount);
-              addSupplyCallback(newSupplyTitle, supplyCount);
+                //print(supplyCount);
+                addSupplyCallback(newSupplyTitle, supplyCount);
                 //Provider.of<TaskData>(context).addTask(newTaskTitle);
                 Navigator.pop(context);
               },

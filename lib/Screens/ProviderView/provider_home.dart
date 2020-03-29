@@ -85,7 +85,7 @@ class _ProviderHomeState extends State<ProviderHome> {
                 icon: Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Icon(
-                    FontAwesomeIcons.hospital,
+                    FontAwesomeIcons.firstAid,
                     size: 20.0,
                   ),
                 ),
@@ -104,7 +104,7 @@ class _ProviderHomeState extends State<ProviderHome> {
                 icon: Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Icon(
-                    FontAwesomeIcons.firstAid,
+                    FontAwesomeIcons.hospital,
                     size: 20.0,
                   ),
                 ),
