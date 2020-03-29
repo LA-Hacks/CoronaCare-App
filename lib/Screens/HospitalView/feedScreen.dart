@@ -13,6 +13,7 @@ class HospitalFeedScreen extends StatefulWidget {
 
 class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
   var hospital;
+  var request;
 
   int tileCount = 0;
   Widget tile;
@@ -30,6 +31,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
     print(hospitals.length);
     return hospitals;
   }
+
 
   void updateUI(dynamic data) {
     print(data);
@@ -61,6 +63,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
   void initState() {
     super.initState();
     getData();
+    
   }
 
   @override
