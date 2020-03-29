@@ -154,8 +154,6 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                     children: <Widget>[
                                       Row(
                                         children: <Widget>[
-                                        
-                                       
                                           Text(
                                             'Item : ' +
                                                 snapshot
@@ -168,15 +166,17 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                           ),
                                         ],
                                       ),
-                                  
                                       Row(
                                         children: <Widget>[
-                                          Text('Type : ' +
-                                              snapshot.data[index].standard, style: TextStyle(
+                                          Text(
+                                            'Type : ' +
+                                                snapshot.data[index].standard,
+                                            style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 17,
                                               fontWeight: FontWeight.w500,
-                                            ),),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                       Row(
@@ -185,7 +185,7 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                             'Quantity : ' +
                                                 snapshot.data[index].quantity
                                                     .toString(),
-                                                    style: TextStyle(
+                                            style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 17,
                                               fontWeight: FontWeight.w500,

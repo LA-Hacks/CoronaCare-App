@@ -11,17 +11,41 @@ class MySupplies extends StatefulWidget {
 }
 
 class _MySuppliesState extends State<MySupplies> {
-  List<Supply> supplies = [
-    Supply(name: 'M-95 Mask', quantity: '500'),
-    Supply(name: 'M-10 Mask', quantity: '1000'),
-  ];
+  List<Supply> supplies = [];
+
+  Future getSupplies() async {
+    NetworkHelper supply;
+    String index;
+    if (NetworkHelper.type == "provider") {
+      supply = NetworkHelper('/supplylist');
+      index = "supplies";
+    } else {
+      supply = NetworkHelper('/requestlist');
+      index = "requests";
+    }
+
+    var suppliesList = await supply.getData();
+    for (var s in suppliesList[index]) {
+      print(s);
+      setState(() {
+        supplies.add(Supply(s['resource_name'], s['standard'], s['quantity']));
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getSupplies();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
       appBar: AppBar(
-        title: Text('Supplies'),
+        title:
+            Text((NetworkHelper.type == "provider" ? "Supplies" : "Requests")),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -33,13 +57,14 @@ class _MySuppliesState extends State<MySupplies> {
               onPressed: () {
                 showModalBottomSheet(
                     context: context,
-                    builder: (context) =>
-                        AddTaskScreen((newSupplyTitle, newSupplyQuantity) {
+                    builder: (context) => AddTaskScreen(
+                            (newSupplyTitle, newStandard, newSupplyQuantity) {
                           setState(() {
                             supplies.add(
                               Supply(
-                                name: newSupplyTitle,
-                                quantity: newSupplyQuantity,
+                                newSupplyTitle,
+                                newStandard,
+                                newSupplyQuantity,
                               ),
                             );
                           });
@@ -103,9 +128,10 @@ class _MySuppliesState extends State<MySupplies> {
 
 class Supply {
   final String name;
-  final String quantity;
+  final String standard;
+  final int quantity;
   bool isDeleated;
-  Supply({this.name, this.quantity, this.isDeleated});
+  Supply(this.name, this.standard, this.quantity);
   void toggleDone() {
     isDeleated = !isDeleated;
   }
@@ -126,7 +152,7 @@ class _SupplyListState extends State<SupplyList> {
         itemBuilder: (context, index) {
           return SupplyTile(
             productName: widget.supplies[index].name,
-            quantity: widget.supplies[index].quantity,
+            quantity: widget.supplies[index].quantity.toString(),
             //add callback too if needed
           );
         });
@@ -224,7 +250,6 @@ class SupplyTile extends StatelessWidget {
 }
 
 class AddTaskScreen extends StatefulWidget {
-
   final Function addSupplyCallback;
 
   AddTaskScreen(this.addSupplyCallback);
@@ -236,9 +261,11 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen> {
   String newSupplyTitle;
 
-  String supplyCount;
+  int supplyCount;
 
   Product selectedProduct;
+  //  = Product("", "", ["Select a Standard"]);
+  String selectedStandard;
 
   List<Product> products = [];
   NetworkHelper productList = NetworkHelper("/resourcelist");
@@ -246,7 +273,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     var providersResponse = await productList.getData();
 
     for (var i in providersResponse['resource']) {
-      Product product = Product(i['name']);
+      print(i['standard']);
+      List<String> standards = [];
+      for (var s in i['standard']) {
+        standards.add(s.toString());
+      }
+      Product product = Product(i['name'], i['_id']['\$oid'], standards);
       setState(() {
         products.add(product);
       });
@@ -277,7 +309,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
-              'New Supply',
+              (NetworkHelper.type == "provider" ? "New Supply" : "New Request"),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 30.0,
@@ -290,31 +322,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             TextField(
               autofocus: true,
               textAlign: TextAlign.center,
-              decoration: kTextFieldDecoration.copyWith(hintText: 'Name'),
+              decoration: kTextFieldDecoration.copyWith(hintText: 'Quantity'),
               //decoration: kTextFieldDecoration.copyWith(hintText: 'Name')),
               onChanged: (newText) {
                 //newTaskTitle = newText;
-                newSupplyTitle = newText;
+                supplyCount = int.parse(newText);
               },
             ),
             SizedBox(
               height: 24,
             ),
-            TextField(
-              autofocus: true,
-              textAlign: TextAlign.center,
-              decoration: kTextFieldDecoration.copyWith(hintText: 'Quantity'),
-              //decoration: kTextFieldDecoration.copyWith(hintText: 'Name')),
-              onChanged: (newText) {
-                //newTaskTitle = newText;
-                supplyCount = newText;
-              },
-            ),
-            SizedBox(height: 24,),
             DropdownButton<Product>(
               hint: Text('Select a Product'),
               value: selectedProduct,
-              onChanged: (Product value){
+              onChanged: (Product value) {
                 setState(() {
                   selectedProduct = value;
                 });
@@ -326,38 +347,41 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 2.0),
                     child: Row(
                       children: <Widget>[
-                        Text(product.productTitle),
-
-                    ],),
+                        Text(product.productName),
+                      ],
+                    ),
                   ),
                 );
-
               }).toList(),
-              ),
-              SizedBox(height: 24,),
-               DropdownButton<Product>(
-              hint: Text('Select a Product'),
-              value: selectedProduct,
-              onChanged: (Product value){
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            DropdownButton<String>(
+              hint: Text('Select a Standard'),
+              value: selectedStandard,
+              onChanged: (String value) {
                 setState(() {
-                  selectedProduct = value;
+                  selectedStandard = value;
                 });
               },
-              items: products.map((Product product) {
-                return DropdownMenuItem<Product>(
-                  value: product,
+              items: (selectedProduct != null
+                      ? selectedProduct.productStandard
+                      : List<String>())
+                  .map((String standard) {
+                return DropdownMenuItem<String>(
+                  value: standard,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 2.0),
                     child: Row(
                       children: <Widget>[
-                        Text(product.productTitle),
-
-                    ],),
+                        Text(standard),
+                      ],
+                    ),
                   ),
                 );
-
               }).toList(),
-              ),
+            ),
             SizedBox(
               height: 24,
             ),
@@ -372,6 +396,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               onPressed: () {
                 //print(newSupplyTitle);
                 //print(supplyCount);
+                NetworkHelper adder;
+                if (NetworkHelper.type == "provider") {
+                  adder = NetworkHelper('/supply');
+                } else {
+                  adder = NetworkHelper('/request');
+                }
+
+                adder.sendData({
+                  "resource_name": selectedProduct.productName,
+                  "resource_id": selectedProduct.productId,
+                  "standard": selectedStandard,
+                  "quantity": supplyCount
+                });
+
+                print("SENT");
+
                 widget.addSupplyCallback(newSupplyTitle, supplyCount);
                 //Provider.of<TaskData>(context).addTask(newTaskTitle);
                 Navigator.pop(context);
@@ -385,6 +425,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 }
 
 class Product {
-  const Product(this.productTitle);
-  final String productTitle;
+  const Product(this.productName, this.productId, this.productStandard);
+  final String productName;
+  final String productId;
+  final List<String> productStandard;
 }

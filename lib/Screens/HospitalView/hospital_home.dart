@@ -9,12 +9,12 @@ import 'package:la_hack/components/icon_content.dart';
 import 'package:la_hack/utilities/constants.dart';
 import 'package:la_hack/Screens/ProviderView/provider_home.dart';
 import 'package:la_hack/utilities/networking.dart';
+import 'package:la_hack/Screens/ProviderView/mySupplies_Screen.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'feedScreen.dart';
 import 'trackPackage.dart';
-import 'hospitalSupplies.dart';
 // get the data for the list of providers
 
 class HospitalHome extends StatefulWidget {
@@ -70,11 +70,7 @@ class _HospitalHomeState extends State<HospitalHome> {
   final List<Widget> _children = [
     HospitalFeedScreen(),
     TrackPackage(),
-    HospitalSupplies(),
-    
-    
-
-    
+    MySupplies(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -129,4 +125,3 @@ class _HospitalHomeState extends State<HospitalHome> {
     );
   }
 }
-

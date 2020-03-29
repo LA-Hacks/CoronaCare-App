@@ -45,7 +45,7 @@ class NetworkHelper {
     }
   }
 
-  Future sendData(Map<String, String> json) async {
+  Future sendData(Map json) async {
     final http.Response response = await http.post(
       url + path,
       headers: <String, String>{
