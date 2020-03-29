@@ -13,9 +13,10 @@ class HospitalFeedScreen extends StatefulWidget {
 
 class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
   var hospital;
-  String location;
+
   int tileCount = 0;
   Widget tile;
+  
 
   Future<List<Hospital>> getData() async {
     NetworkHelper networkHelper = NetworkHelper('/hospitallist');
@@ -97,6 +98,8 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
+                                  //Text(snapshot.data[index].city_name),
+                                 // Text(snapshot.data[index].address),
                                   Text(snapshot.data[index].name),
                                   Text(
                                     snapshot.data[index].location,
@@ -183,7 +186,6 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
 }
 
 class SendRequestScreen extends StatelessWidget {
- 
 
   @override
   Widget build(BuildContext context) {
@@ -388,5 +390,7 @@ class CustomListItemTwo extends StatelessWidget {
 class Hospital {
   final String name;
   final String location;
-  Hospital({this.name, this.location});
+  final String address;
+  final String city_state;
+  Hospital({this.name, this.location,this.address,this.city_state});
 }

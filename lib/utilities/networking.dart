@@ -19,8 +19,20 @@ class NetworkHelper {
     }
   }
 
- 
+  Future sendData(Map<String, String> json) async {
+    final http.Response response = await http.post(
+      url + path,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(json),
+    );
+    print(response.body);
+
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to create album.');
+    }
   }
-
-
-
+}

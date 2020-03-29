@@ -13,45 +13,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-String url = 'http://2c990005.ngrok.io';
-
-Future<SendData> sendData(String username, String password) async {
-  final http.Response response = await http.post(
-    'http://2c990005.ngrok.io/register',
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'username': username,
-      'password' : password
-      
-    }),
-  );
-  print(response.body);
-
-
-  if (response.statusCode == 201) {
-    return SendData.fromJson(json.decode(response.body));
-   
-  } else {
-    throw Exception('Failed to create album.');
-  }
+// get the data for the list of providers
+class Provider_id {
+  const Provider_id(this.name, this.location);
+  final String name;
+  final String location;
 }
-
-class SendData {
-  final int id;
-  final String title;
-
-  SendData({this.id, this.title});
-
-  factory SendData.fromJson(Map<String, dynamic> json) {
-    return SendData(
-      id: json['username'],
-      title: json['password'],
-    );
-  }
-}
-
 
 class Provider_Registration extends StatefulWidget {
   static const String id = "Provider_logIn";
@@ -65,7 +32,61 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
 
   String username;
   String password;
-  Future<SendData> _sendData;
+  String provider_id;
+
+  var providers;
+
+  void getProviders() async {
+    var providersResponse = await providerList.getData();
+    providers = providersResponse['providers/'];
+    print(providers);
+    print(providers.toString());
+  }
+
+  List _providerDopDownList = ["Birds", "Apples"];
+
+  List<DropdownMenuItem<String>> _dropDownMenuItems;
+  String _selected_provider;
+
+  List<DropdownMenuItem<String>> buildAndGetDropDownItems(
+      List providerDopDownList) {
+    List<DropdownMenuItem<String>> items = List();
+    for (String i in providerDopDownList) {
+      items.add(
+        DropdownMenuItem(
+          value: i,
+          child: Container(
+            
+            child: 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(i,),
+              ],
+              ),
+        ),
+        ),
+      );
+    }
+    return items;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getProviders();
+    _dropDownMenuItems = buildAndGetDropDownItems(_providerDopDownList);
+    _selected_provider = _dropDownMenuItems[0].value;
+  }
+
+  void changeDropDownItem(String selectedProvider) {
+    setState(() {
+      _selected_provider = selectedProvider;
+    });
+  }
+
+  NetworkHelper providerList = NetworkHelper("/providerlist");
+  NetworkHelper registerProvider = NetworkHelper("/register");
 
   @override
   Widget build(BuildContext context) {
@@ -82,11 +103,11 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
             children: <Widget>[
               Column(
                 children: <Widget>[
-                //  Icon(
-                 //   FontAwesomeIcons.user,
-                 //   color: Colors.white,
-                 ////   size: 200,
-                 // ),
+                  //  Icon(
+                  //   FontAwesomeIcons.user,
+                  //   color: Colors.white,
+                  ////   size: 200,
+                  // ),
                 ],
               ),
               SizedBox(
@@ -120,29 +141,40 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (value) {
                     //email = value;
+                    password = value;
                   },
-                  decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Name of Product')),
+                  decoration:
+                      kTextFieldDecoration.copyWith(hintText: 'Password')),
               SizedBox(
                 height: 24.0,
               ),
-              TextField(
+              DropdownButton(
+                items: _dropDownMenuItems,
+                value: _selected_provider,
+                onChanged: changeDropDownItem,
+              ),
+              /*TextField(
                 textAlign: TextAlign.center,
                 obscureText: true,
                 onChanged: (value) {
-                  password = value;
+                  provider_id = value;
                   //Do something with the user input.
                 },
-                decoration: kTextFieldDecoration.copyWith(hintText: 'Address'),
-              ),
+                decoration:
+                    kTextFieldDecoration.copyWith(hintText: 'Provider ID'),
+              ),*/
               RoundedButton(
                 title: 'Register',
                 color: Colors.lightBlueAccent,
                 onPressed: () {
                   setState(() {
-                       _sendData = sendData(username, password);
+                    registerProvider.sendData({
+                      "username": username,
+                      "password": password,
+                      "provider_id": provider_id,
+                    });
                   });
-               
+
                   Navigator.popAndPushNamed(context, ProviderHome.id);
                 },
                 /*
@@ -169,6 +201,22 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class SendData {
+  final int id;
+  final String title;
+  final String provider_id;
+
+  SendData({this.id, this.title, this.provider_id});
+
+  factory SendData.fromJson(Map<String, dynamic> json) {
+    return SendData(
+      id: json['username'],
+      title: json['password'],
+      provider_id: json['provider_id'],
     );
   }
 }
