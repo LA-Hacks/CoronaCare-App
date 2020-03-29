@@ -36,9 +36,12 @@ class _MySuppliesState extends State<MySupplies> {
                     builder: (context) =>
                         AddTaskScreen((newSupplyTitle, newSupplyQuantity) {
                           setState(() {
-                            supplies.add(Supply(
+                            supplies.add(
+                              Supply(
                                 name: newSupplyTitle,
-                                quantity: newSupplyQuantity));
+                                quantity: newSupplyQuantity,
+                              ),
+                            );
                           });
                         }));
               },
@@ -186,7 +189,7 @@ class SupplyTile extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         '',
-                       // quantity,
+                        // quantity,
                       )
                     ],
                   ),
@@ -220,11 +223,43 @@ class SupplyTile extends StatelessWidget {
   }
 }
 
-class AddTaskScreen extends StatelessWidget {
+class AddTaskScreen extends StatefulWidget {
+
   final Function addSupplyCallback;
+
   AddTaskScreen(this.addSupplyCallback);
+
+  @override
+  _AddTaskScreenState createState() => _AddTaskScreenState();
+}
+
+class _AddTaskScreenState extends State<AddTaskScreen> {
   String newSupplyTitle;
+
   String supplyCount;
+
+  Product selectedProduct;
+
+  List<Product> products = [];
+  NetworkHelper productList = NetworkHelper("/resourcelist");
+  Future<List<Product>> getProviders() async {
+    var providersResponse = await productList.getData();
+
+    for (var i in providersResponse['resource']) {
+      Product product = Product(i['name']);
+      setState(() {
+        products.add(product);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getProviders();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -275,6 +310,54 @@ class AddTaskScreen extends StatelessWidget {
                 supplyCount = newText;
               },
             ),
+            SizedBox(height: 24,),
+            DropdownButton<Product>(
+              hint: Text('Select a Product'),
+              value: selectedProduct,
+              onChanged: (Product value){
+                setState(() {
+                  selectedProduct = value;
+                });
+              },
+              items: products.map((Product product) {
+                return DropdownMenuItem<Product>(
+                  value: product,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text(product.productTitle),
+
+                    ],),
+                  ),
+                );
+
+              }).toList(),
+              ),
+              SizedBox(height: 24,),
+               DropdownButton<Product>(
+              hint: Text('Select a Product'),
+              value: selectedProduct,
+              onChanged: (Product value){
+                setState(() {
+                  selectedProduct = value;
+                });
+              },
+              items: products.map((Product product) {
+                return DropdownMenuItem<Product>(
+                  value: product,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text(product.productTitle),
+
+                    ],),
+                  ),
+                );
+
+              }).toList(),
+              ),
             SizedBox(
               height: 24,
             ),
@@ -289,7 +372,7 @@ class AddTaskScreen extends StatelessWidget {
               onPressed: () {
                 //print(newSupplyTitle);
                 //print(supplyCount);
-                addSupplyCallback(newSupplyTitle, supplyCount);
+                widget.addSupplyCallback(newSupplyTitle, supplyCount);
                 //Provider.of<TaskData>(context).addTask(newTaskTitle);
                 Navigator.pop(context);
               },
@@ -299,4 +382,9 @@ class AddTaskScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class Product {
+  const Product(this.productTitle);
+  final String productTitle;
 }
