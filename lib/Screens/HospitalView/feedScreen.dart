@@ -9,17 +9,15 @@ import 'package:la_hack/utilities/constants.dart';
 class Hospital {
   final String name;
   final String location;
-  final String address;
-  final String city_state;
-  Hospital({this.name, this.location, this.address, this.city_state});
+  Hospital({this.name, this.location});
 }
 
 class Request {
-  final String name;
+  final String resource_name;
   final String standard;
-  final String hospital_id;
+  final Hospital hospital;
   final int quantity;
-  Request({this.name, this.standard, this.hospital_id, this.quantity});
+  Request({this.resource_name, this.standard, this.hospital, this.quantity});
 }
 
 class HospitalFeedScreen extends StatefulWidget {
@@ -34,20 +32,30 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
   int tileCount = 0;
   Widget tile;
 
-  Future<List<Hospital>> getData() async {
-    NetworkHelper networkHelper = NetworkHelper('/hospitallist');
-    var data = await networkHelper.getData();
+  NetworkHelper hospitalList = NetworkHelper('/hospitallist');
+  NetworkHelper requestList = NetworkHelper('/requestlistall');
 
-    List<Hospital> hospitals = [];
-    for (var u in data['hospitals']) {
-      Hospital hospital = Hospital(name: u['name'], location: u['city_state']);
-      hospitals.add(hospital);
+  Future<List<Request>> getData() async {
+    var hospitals = await hospitalList.getData();
+    Map<String, Hospital> hospitalsDict = Map<String, Hospital>();
+    for (var u in hospitals['hospitals']) {
+      hospitalsDict[u['_id']['\$oid'].toString()] =
+          Hospital(name: u['name'], location: u['city_state']);
     }
-    print(hospitals.length);
-    return hospitals;
-  }
 
-  Future<List<Request>> getRequests() async {}
+    var requests = await requestList.getData();
+
+    List<Request> requestsList = [];
+    for (var r in requests['requests']) {
+      requestsList.add(Request(
+          hospital: hospitalsDict[r['hospital_id']],
+          resource_name: r['resource_name'],
+          standard: r['standard'],
+          quantity: r['quantity']));
+    }
+
+    return requestsList;
+  }
 
   void updateUI(dynamic data) {
     print(data);
@@ -118,9 +126,9 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                 children: <Widget>[
                                   //Text(snapshot.data[index].city_name),
                                   // Text(snapshot.data[index].address),
-                                  Text(snapshot.data[index].name),
+                                  Text(snapshot.data[index].hospital.name),
                                   Text(
-                                    snapshot.data[index].location,
+                                    snapshot.data[index].hospital.location,
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 15),
                                   )
@@ -140,35 +148,14 @@ class _HospitalFeedScreenState extends State<HospitalFeedScreen> {
                                     vertical: 8.0,
                                   ),
                                   child: Column(
-                                    children: <Widget>[Text('Requesting')],
+                                    children: <Widget>[
+                                      Text(snapshot.data[index].resource_name),
+                                      Text(snapshot.data[index].standard),
+                                      Text(snapshot.data[index].quantity
+                                          .toString())
+                                    ],
                                   ),
                                 ),
-                              ),
-                              ButtonBar(
-                                alignment: MainAxisAlignment.end,
-                                buttonHeight: 52.0,
-                                buttonMinWidth: 90.0,
-                                children: <Widget>[
-                                  FlatButton(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(18.0),
-                                        side: BorderSide(color: Colors.red)),
-                                    onPressed: () {
-                                      showModalBottomSheet(
-                                          context: context,
-                                          builder: (context) =>
-                                              SendRequestScreen());
-                                    },
-                                    color: Colors.red,
-                                    child: Text(
-                                      'Add',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ),
                             ],
                           ),

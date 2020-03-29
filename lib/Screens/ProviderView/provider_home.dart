@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:la_hack/Screens/authentication/provider_logIn.dart';
 import 'package:la_hack/utilities/networking.dart';
-import 'feedScreen.dart';
+import 'package:la_hack/Screens/HospitalView/feedScreen.dart';
 import 'trackPackageScreen.dart';
 import 'mySupplies_Screen.dart';
 
@@ -60,7 +60,6 @@ class _ProviderHomeState extends State<ProviderHome> {
     MySupplies(),
     TrackPackage(),
     HospitalFeedScreen(),
-  
   ];
   @override
   Widget build(BuildContext context) {
@@ -115,4 +114,3 @@ class _ProviderHomeState extends State<ProviderHome> {
     );
   }
 }
-
