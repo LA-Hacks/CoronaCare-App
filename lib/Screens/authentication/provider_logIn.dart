@@ -14,18 +14,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 // get the data for the list of providers
-class Item {
-  const Item(this.name, this.icon);
-  final String name;
-  final Icon icon;
-}
-
 class Provider {
+  const Provider(this.name, this.id, this.icon);
   final String name;
-  final String location;
   final String id;
-
-  Provider({this.name, this.location, this.id});
+  final Icon icon;
 }
 
 class Provider_Registration extends StatefulWidget {
@@ -43,49 +36,25 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
   String provider_id;
   String phone_number;
 
-  List providerNames = [];
-  List providerLocation = [];
   NetworkHelper providerList = NetworkHelper("/providerlist");
   NetworkHelper registerProvider = NetworkHelper("/register");
 
+  List<Provider> providers = [];
+  Provider selectedProvider;
+
   Future<List<Provider>> getProviders() async {
     var providersResponse = await providerList.getData();
-    List<Provider> providers = [];
-    print('hello world');
-    print(providersResponse);
-    print(providersResponse['providers']);
-    //providers = providersResponse['providers'];
+
     for (var i in providersResponse['providers']) {
       Provider provider = Provider(
-          name: i['name'],
-          location: i['zip'],
-          id: i['_id']['\$oid'].toString());
-      providers.add(provider);
-      providerNames.add(provider.name);
-      providerLocation.add(provider.location);
-      print(provider);
-      print('Name:' + provider.name);
-      print(provider.id);
-      print('gsertghsethgrtn');
+          i['name'], i['_id']['\$oid'].toString(), Icon(Icons.android));
+      setState(() {
+        providers.add(provider);
+      });
     }
-    return providers;
-  }
 
-  Item selectedUser;
-  List<Item> users = <Item>[
-    Item(
-      'Android',
-      Icon(Icons.android),
-    ),
-     Item(
-      'Android',
-      Icon(Icons.android),
-    ),
-     Item(
-      'Android',
-      Icon(Icons.android),
-    ),
-  ];
+    print("finished reloading");
+  }
 
   @override
   void initState() {
@@ -168,23 +137,23 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
               SizedBox(
                 height: 24.0,
               ),
-              DropdownButton<Item>(
-                hint: Text('Provider Id'),
-                value: selectedUser,
-                onChanged: (Item value) {
+              DropdownButton<Provider>(
+                hint: Text('Select a Provider'),
+                value: selectedProvider,
+                onChanged: (Provider value) {
                   setState(() {
-                    selectedUser = value;
+                    selectedProvider = value;
                   });
                 },
-                items: users.map((Item user) {
-                  return DropdownMenuItem<Item>(
-                    value: user,
+                items: providers.map((Provider provider) {
+                  return DropdownMenuItem<Provider>(
+                    value: provider,
                     child: Row(
                       children: <Widget>[
-                        user.icon,
+                        provider.icon,
                         SizedBox(width: 10),
                         Text(
-                          user.name,
+                          provider.name,
                         ),
                       ],
                     ),
@@ -195,16 +164,21 @@ class _Provider_RegistrationState extends State<Provider_Registration> {
                 title: 'Register',
                 color: Colors.red,
                 onPressed: () {
-                  setState(() {
-                    registerProvider.sendData({
-                      "username": username,
-                      "password": password,
-                      "provider_id": provider_id,
-                      "phone_number": phone_number,
+                  if (username != null &&
+                      password != null &&
+                      phone_number != null &&
+                      selectedProvider != null) {
+                    setState(() {
+                      registerProvider.sendData({
+                        "username": username,
+                        "password": password,
+                        "provider_id": selectedProvider.id,
+                        "phone_number": phone_number,
+                      });
                     });
-                  });
 
-                  Navigator.popAndPushNamed(context, ProviderHome.id);
+                    Navigator.popAndPushNamed(context, ProviderHome.id);
+                  }
                 },
                 /*
                 onPressed: () async {
